@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            display:grid;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+        }
+
+        .container {
+            width: 70vh;
+        }
+
+        .chart-container {
+            flex-basis: 50%;
+            box-sizing: border-box;
+            padding: 10px; /* Optional: Add some padding between charts */
+        }
+    </style>
+</head>
+<body>
+    <h1>Word Cloud</h1>
+        <div class="word">
+    </div>
+<div clas="container">
+    <h1>Bar Chart</h1>
+    <div class=".chart-container">
+    <canvas id="myChart"></canvas>
+    </div>
+
+    <h1>Horizontal Bar Chart</h1>
+    <div class=".chart-container">
+    <canvas id="myVerticalBarChart"></canvas>
+    </div>
+
+    <h1>Pie Chart</h1>
+    <div class=".chart-container">
+    <canvas id="myDonutChart"></canvas>
+    </div>
+
+    <h1>Spider Chart</h1>
+    <div class=".chart-container">
+    <canvas id="spiderChart"></canvas>
+    </div>
+</div>
+
+<!-- WORD CLOUD -->
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <script src="https://rawgit.com/jasondavies/d3-cloud/master/build/d3.layout.cloud.js"></script>
+  <script>
+    function wordCloud(selector) {
+        var fill = d3.scale.category20();
+
+        var svg = d3.select(selector).append("svg")
+            .attr("width", 800)
+            .attr("height", 600)
+            .append("g")
+            .attr("transform", "translate(400,300)");
+
+        function draw(words) {
+            var cloud = svg.selectAll("g text")
+                .data(words, function(d) { return d.text; });
+
+            cloud.enter()
+                .append("text")
+                .style("font-family", "Impact")
+                .style("fill", function(d, i) { return fill(i); })
+                .attr("text-anchor", "middle")
+                .attr('font-size', 1)
+                .text(function(d) { return d.text; });
+
+            cloud.transition()
+                .duration(600)
+                .style("font-size", function(d) { return d.size + "px"; })
+                .attr("transform", function(d) {
+                    return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+                })
+                .style("fill-opacity", 1);
+
+            cloud.exit()
+                .transition()
+                .duration(200)
+                .style('fill-opacity', 1e-6)
+                .attr('font-size', 1)
+                .remove();
+        }
+
+        return {
+            update: function(words) {
+                d3.layout.cloud().size([500, 500])
+                    .words(words)
+                    .padding(5)
+                    .rotate(function() { return ~~(Math.random() * 2) * 90; })
+                    .font("Impact")
+                    .fontSize(function(d) { return d.size; })
+                    .on("end", draw)
+                    .start();
+            }
+        };
+    }
+
+    var wordsData = [
+        // { text: "candi", size: 237 },
+        // { text: "borobudur", size: 127 },
+        { text: "naik", size: 61 },
+        { text: "masuk", size: 59 },
+        { text: "tempat", size: 58 },
+        { text: "tiket", size: 47 },
+        { text: "waktu", size: 39 },
+        { text: "dunia", size: 38 },
+        { text: "wisata", size: 34 },
+        { text: "hari", size: 32 },
+        { text: "jalan", size: 31 },
+        { text: "atas", size: 29 },
+        { text: "keluar", size: 29 },
+        { text: "pintu", size: 28 },
+        { text: "jauh", size: 27 },
+        { text: "area", size: 27 },
+        { text: "payung", size: 26 },
+        { text: "anak", size: 25 },
+        { text: "harga", size: 25 },
+        { text: "sejarah", size: 25 }
+    ];
+
+    function showNewWords(vis, i) {
+        i = i || 0;
+
+        vis.update(wordsData);
+        setTimeout(function() { showNewWords(vis, i + 1); }, 2000);
+    }
+
+    var myWordCloud = wordCloud('.word');
+    showNewWords(myWordCloud);
+</script>
+  
+<!-- BAR CART -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var chart = new Chart(ctx, {
+            type: 'horizontalBar',
+            data: {
+                labels: ['Label 1', 'Label 2', 'Label 3', 'Label 4'],
+                datasets: [{
+                    label: "My Horizontal Bar Chart",
+                    data: [2, 20, 15, 25],
+                    backgroundColor: ['rgba(255, 99, 132, 0.7)', 'rgba(54, 162, 235, 0.7)', 'rgba(255, 206, 86, 0.7)', 'rgba(75, 192, 192, 0.7)'],
+                    borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)', 'rgba(255, 206, 86, 1)', 'rgba(75, 192, 192, 1)'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                title: {
+                    text: "My Horizontal Bar Chart",
+                    display: true,
+                },
+                legend: {
+                    display: true,
+                },
+                tooltips: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                scales: {
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Jumlah'
+                        }
+                    }],
+                    yAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Kata'
+                        },
+                        ticks: {
+                            beginAtZero: true  // Set this property to true
+                        }
+                    }]
+                }
+            },
+            animation: {
+                        duration: 1000, // Animation duration in milliseconds
+                        easing: 'easeOutQuart', // You can change the easing function
+                        loop: true
+            }
+        });
+    });
+</script>
+
+<!-- BAR CART -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var ctx = document.getElementById('myVerticalBarChart').getContext('2d');
+        var verticalBarChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Label 1', 'Label 2', 'Label 3', 'Label 4'],
+                datasets: [{
+                    label: "My Vertical Bar Chart",
+                    data: [2, 20, 15, 25],
+                    backgroundColor: ['rgba(255, 99, 132, 0.8)', 'rgba(54, 162, 235, 0.8)', 'rgba(255, 206, 86, 0.8)', 'rgba(75, 192, 192, 0.8)'],
+                    borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)', 'rgba(255, 206, 86, 1)', 'rgba(75, 192, 192, 1)'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                title: {
+                    text: "My Vertical Bar Chart",
+                    display: true,
+                },
+                legend: {
+                    display: true,
+                    position: 'top', // You can change the position of the legend
+                },
+                tooltips: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                scales: {
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Labels'
+                        }
+                    }],
+                    yAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Values'
+                        }
+                    }]
+                }
+            },
+            animation: {
+                        duration: 1000, // Animation duration in milliseconds
+                        easing: 'easeOutQuart' // You can change the easing function
+            }
+        });
+    });
+</script>
+
+<!-- DONAT CART -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var ctx = document.getElementById('myDonutChart').getContext('2d');
+        var donutChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['Negatif', 'Netral', 'Positif', 'None'],
+                datasets: [{
+                    data: [6.11,17.52, 8.31, 68],
+                    backgroundColor: ['rgba(255, 99, 132, 0.8)', 'rgba(54, 162, 235, 0.8)', 'rgba(255, 206, 86, 0.8)', 'rgba(75, 192, 192, 0.8)'],
+                    borderColor: 'white', // Set the separator color
+                    borderWidth: 3, // Adjust this value to control the separator width
+                }]
+            },
+            options: {
+                cutoutPercentage: 0,
+                title: {
+                    text: "Proporsi Sentimen Per Aspek (Attractions)",
+                    display: true,
+                },
+                legend: {
+                    display: true,
+                    position: 'bottom',
+                },
+                tooltips: {
+                    mode: 'point',
+                },
+                animation: {
+                    animateRotate: true,
+                    animateScale: true
+                }
+            }
+        });
+    });
+</script>
+
+<!-- Spider Chart -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var ctx = document.getElementById('spiderChart').getContext('2d');
+
+        var spiderChart = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['Ketertarikan', 'Fasilitas', 'Akses', 'Harga', 'Aspek Lain'],
+                datasets: [{
+                    label: 'Candi Borobudur',
+                    data: [15, 7, 10, 13, 6], // Example values, you can customize these
+                    backgroundColor: 'rgba(255, 99, 132, 0.4)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                scale: {
+                    ticks: {
+                        beginAtZero: true,
+                        max: 20, // You can adjust the maximum value according to your needs
+                        display: false // Hide numerical values on the axes
+                    }
+                },
+                title: {
+                    display: true,
+                    text: 'Animated Spider Chart'
+                },
+                animation: {
+                    animateRotate: true,
+                    animateScale: true
+                }
+            }
+        });
+    });
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+  
+</body>
